@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>نظام القبول والتسجيل | المدرسة نيو فيجن الخاصة - طباعة متقدمة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(145deg, #eef2f7 0%, #d9e0e8 100%);
+      font-family: 'Tajawal', sans-serif;
+      padding: 30px 20px;
+      color: #1e2a3e;
+    }
+    .app-wrapper { max-width: 1400px; margin: 0 auto; }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 35px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      padding: 15px 25px;
+      border-radius: 60px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .logo-area { display: flex; align-items: center; gap: 15px; }
+    .logo-circle {
+      width: 70px; height: 70px;
+      background: linear-gradient(135deg, #1f4e6e, #2c7a4d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+    }
+    .logo-circle:hover { transform: scale(1.02); }
+    .logo-circle i { font-size: 38px; color: white; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2)); }
+    .school-title h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #1f4e6e, #2c7a4d); background-clip: text; -webkit-background-clip: text; color: transparent; }
+    .school-title p { font-size: 0.85rem; color: #3a6b47; font-weight: 500; }
+    .brand-icon { background: rgba(44,122,77,0.15); border-radius: 40px; padding: 5px 12px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; color: #2c7a4d; }
+    .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .print-group { display: flex; gap: 8px; background: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 50px; align-items: center; flex-wrap: wrap; }
+    .print-group span { font-size: 0.8rem; font-weight: bold; color: #1f4e6e; }
+    .print-btn { background: #4f6f8f; box-shadow: none; padding: 8px 12px; font-size: 0.8rem; cursor: pointer; border-radius: 40px; color: white; border: none; }
+    .print-btn-accepted { background: #2c7a4d; }
+    .print-btn-rejected { background: #b33b2c; }
+    .print-btn-pending { background: #e67e22; }
+    .print-btn-retest { background: #8e44ad; }
+    .print-btn-all { background: #1f4e6e; }
+    .print-btn:hover { opacity: 0.85; transform: scale(0.97); }
+    .excel-btn { background: #1d6f42; cursor: pointer; }
+    .excel-btn:hover { background: #0f5934; }
+    .upload-btn { background: #e67e22; cursor: pointer; }
+    .upload-btn:hover { background: #d35400; }
+    .dashboard { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+    .card {
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(2px);
+      border-radius: 36px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+      padding: 1.8rem 2rem;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.5);
+      flex: 1 1 520px;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 28px 40px -14px rgba(0,0,0,0.25); }
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      border-right: 6px solid #2c7a4d;
+      padding-right: 18px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .card-title i { color: #2c7a4d; font-size: 1.7rem; }
+    .form-group { margin-bottom: 18px; display: flex; flex-direction: column; }
+    label { font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; color: #1f4e6e; }
+    input, select, textarea {
+      padding: 12px 14px;
+      border-radius: 28px;
+      border: 1.5px solid #cfdfed;
+      background: #fefefe;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #2c7a4d; box-shadow: 0 0 0 3px rgba(44,122,77,0.2); }
+    input.invalid-phone { border-color: #b33b2c; background-color: #fff5f5; }
+    .phone-error { color: #b33b2c; font-size: 0.75rem; margin-top: 4px; margin-right: 12px; display: flex; align-items: center; gap: 5px; }
+    .row-2cols { display: flex; gap: 18px; flex-wrap: wrap; }
+    .row-2cols .form-group { flex: 1; }
+    button {
+      background: #1f4e6e;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+    button.btn-primary { background: #2c7a4d; box-shadow: 0 5px 10px rgba(44,122,77,0.3); }
+    button.btn-secondary { background: #5883a0; }
+    .search-area { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; }
+    .search-area input { flex: 2; min-width: 180px; }
+    .students-table-wrapper { overflow-x: auto; border-radius: 28px; background: #ffffffc9; padding: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+    th { background-color: #eef3fc; font-weight: 800; color: #1f4e6e; }
+    tr:hover td { background-color: #f8fafd; }
+    .status-badge { background: #eef2f7; padding: 4px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; display: inline-block; }
+    .status-pending { background: #fff3e0; color: #c97e00; }
+    .status-accepted { background: #e0f7e8; color: #1e6f3f; }
+    .status-rejected { background: #ffe6e3; color: #b33b2c; }
+    .status-retest { background: #f3e5ff; color: #8e44ad; }
+    .action-buttons i { margin: 0 5px; cursor: pointer; font-size: 1.1rem; transition: 0.1s; }
+    .fa-check-circle { color: #2c7a4d; }
+    .fa-times-circle { color: #b33b2c; }
+    .fa-redo-alt { color: #8e44ad; }
+    .fa-trash-alt { color: #8b6b5c; }
+    .action-buttons i:hover { opacity: 0.7; transform: scale(1.1); }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      background: #eef3fa;
+      border-radius: 48px;
+      padding: 12px 24px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .stat-item { font-weight: 700; font-size: 0.85rem; }
+    @media print {
+      body * { visibility: hidden; }
+      .printable-area, .printable-area * { visibility: visible; }
+      .printable-area { position: absolute; top: 0; right: 0; width: 100%; margin: 0; padding: 20px; background: white; }
+      .hero, .dashboard .card:first-child, .stats, .search-area, .action-buttons,
+      button, .btn-primary, .btn-secondary, .print-btn, .excel-btn, footer, 
+      .backup-note, .header-actions, .print-group, .card-title i,
+      .action-buttons, .fa-trash-alt, .fa-check-circle, .fa-times-circle, .fa-redo-alt {
+        display: none !important;
+      }
+      .printable-area .card-title { display: block !important; font-size: 1.5rem; text-align: center; border: none; margin-bottom: 15px; }
+      .printable-area table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
+      .printable-area th, .printable-area td { border: 1px solid #999; padding: 8px; text-align: center; }
+      .status-badge { border: 1px solid #333; background: #f2f2f2 !important; color: black !important; print-color-adjust: exact; }
+      .logo-area-print { display: flex !important; justify-content: center; margin-bottom: 15px; gap: 12px; align-items: center; }
+    }
+    footer { text-align: center; margin-top: 40px; font-size: 0.8rem; color: #4c6f86; }
+    @media (max-width: 780px) { .card { padding: 1.5rem; } .hero { flex-direction: column; text-align: center; } .logo-area { justify-content: center; } }
+    .backup-note { font-size: 0.7rem; margin-top: 10px; color: #2c7a4d; background: #e9f5ef; display: inline-block; padding: 4px 14px; border-radius: 50px; }
+    .printable-area { display: none; }
+    .mini-logo-badge { display: inline-flex; align-items: center; gap: 5px; background: #eef3fc; border-radius: 50px; padding: 4px 12px; font-size: 0.7rem; color: #1f4e6e; margin-right: 8px; }
+    .required-star { color: #b33b2c; margin-right: 4px; }
+    .upload-preview { margin-top: 15px; padding: 12px; background: #f0f7f0; border-radius: 24px; max-height: 300px; overflow-y: auto; display: none; }
+    .upload-preview.show { display: block; }
+    .preview-table { width: 100%; font-size: 0.75rem; }
+    .preview-table th, .preview-table td { padding: 6px; }
+    .import-success { background: #2c7a4d; color: white; padding: 10px; border-radius: 28px; text-align: center; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <div class="hero">
+    <div class="logo-area">
+      <div class="logo-circle"><i class="fas fa-graduation-cap"></i></div>
+      <div class="school-title">
+        <h1><i class="fas fa-school"></i> مدرسة نيوفيجن الخاصة</h1>
+        <p>رؤية وتميز • جودة تعليمية • مستقبل مشرق</p>
+        <div class="brand-icon"><i class="fas fa-crown"></i> نظام القبول الموحد <i class="fas fa-star-of-life"></i></div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="print-group">
+        <span><i class="fas fa-print"></i> طباعة:</span>
+        <button id="printAcceptedBtn" class="print-btn print-btn-accepted"><i class="fas fa-check-circle"></i> مقبول</button>
+        <button id="printRejectedBtn" class="print-btn print-btn-rejected"><i class="fas fa-times-circle"></i> مرفوض</button>
+        <button id="printPendingBtn" class="print-btn print-btn-pending"><i class="fas fa-hourglass-half"></i> قائمة انتظار</button>
+        <button id="printRetestBtn" class="print-btn print-btn-retest"><i class="fas fa-redo-alt"></i> إعادة اختبار</button>
+        <button id="printAllBtn" class="print-btn print-btn-all"><i class="fas fa-users"></i> الكل</button>
+      </div>
+      <button id="exportExcelBtn" class="excel-btn"><i class="fas fa-file-excel"></i> تصدير Excel</button>
+      <button id="uploadExcelBtn" class="upload-btn"><i class="fas fa-upload"></i> رفع Excel</button>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-user-plus"></i>
+        <span>تقديم طالب جديد</span>
+        <span class="mini-logo-badge"><i class="fas fa-graduation-cap"></i> تسجيل 2025</span>
+      </div>
+      <form id="studentForm" onsubmit="return false;">
+        <div class="row-2cols">
+          <div class="form-group"><label><i class="fas fa-user"></i> الاسم الكامل <span class="required-star">*</span></label><input type="text" id="fullName" required></div>
+          <div class="form-group"><label><i class="fas fa-id-card"></i> رقم الهوية</label><input type="text" id="studentId" placeholder="اختياري"></div>
+        </div>
+        <div class="row-2cols">
+          <div class="form-group"><label><i class="fas fa-calendar-alt"></i> تاريخ الميلاد <span class="required-star">*</span></label><input type="date" id="dob" required></div>
+          <div class="form-group"><label><i class="fas fa-venus-mars"></i> الجنس</label><select id="gender"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select></div>
+        </div>
+        <div class="row-2cols">
+          <div class="form-group"><label><i class="fas fa-user-tie"></i> وظيفة ولي الأمر <span class="required-star">*</span></label>
+            <input type="text" id="parentJob" placeholder="مثال: أب, أم, وصي قانوني, جد, ..." required>
+          </div>
+          <div class="form-group"><label><i class="fas fa-phone"></i> رقم ولي الأمر (1) <span class="required-star">*</span> (11 رقم)</label><input type="tel" id="parentPhone" maxlength="11" inputmode="numeric"><div id="phoneErrorMsg" class="phone-error" style="display: none;"><i class="fas fa-exclamation-circle"></i> يجب أن يكون 11 رقمًا</div></div>
+        </div>
+        <div class="row-2cols">
+          <div class="form-group"><label><i class="fas fa-phone-alt"></i> رقم ولي الأمر (2)</label><input type="tel" id="parentPhone2" maxlength="11" inputmode="numeric" placeholder="اختياري"></div>
+          <div class="form-group"><label><i class="fas fa-envelope"></i> البريد الإلكتروني</label><input type="email" id="email"></div>
+        </div>
+        <div class="row-2cols">
+          <div class="form-group"><label><i class="fas fa-school"></i> المرحلة</label><select id="grade">
+            <option value="KG1">KG1</option><option value="KG2">KG2</option>
+            <option value="الصف الأول">الصف الأول</option><option value="الصف الثاني">الصف الثاني</option>
+            <option value="الصف الثالث">الصف الثالث</option><option value="الصف الرابع">الصف الرابع</option>
+            <option value="الصف الخامس">الصف الخامس</option><option value="الصف السادس">الصف السادس</option>
+            <option value="الأول الإعدادي">الأول الإعدادي</option><option value="الثاني الإعدادي">الثاني الإعدادي</option>
+            <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+            <option value="الأول الثانوي">الأول الثانوي</option><option value="الثاني الثانوي">الثاني الثانوي</option>
+            <option value="الثالث الثانوي">الثالث الثانوي</option>
+          </select></div>
+          <div class="form-group"><label><i class="fas fa-building"></i> المدرسة السابقة</label><input type="text" id="previousSchool" placeholder="اسم المدرسة السابقة"></div>
+        </div>
+        <div class="form-group"><label><i class="fas fa-note-sticky"></i> ملاحظات</label><textarea rows="2" id="notes"></textarea></div>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;"><button type="submit" class="btn-primary" id="submitBtn"><i class="fas fa-paper-plane"></i> تقديم</button><button type="button" id="clearFormBtn" class="btn-secondary"><i class="fas fa-eraser"></i> مسح</button></div>
+      </form>
+      <div class="backup-note"><i class="fas fa-database"></i> حفظ تلقائي | رقم ولي الأمر الأول: 11 رقمًا</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fas fa-users-viewfinder"></i><span>قائمة المتقدمين</span><span class="mini-logo-badge"><i class="fas fa-chalkboard-user"></i> متابعة</span></div>
+      <div class="stats" id="statsPanel">
+        <span class="stat-item"><i class="fas fa-users"></i> الإجمالي: <strong id="totalCount">0</strong></span>
+        <span class="stat-item"><i class="fas fa-check-circle" style="color:#2c7a4d;"></i> مقبول: <strong id="acceptedCount">0</strong></span>
+        <span class="stat-item"><i class="fas fa-hourglass-half"></i> قيد الانتظار: <strong id="pendingCount">0</strong></span>
+        <span class="stat-item"><i class="fas fa-redo-alt" style="color:#8e44ad;"></i> إعادة اختبار: <strong id="retestCount">0</strong></span>
+        <span class="stat-item"><i class="fas fa-times-circle" style="color:#b33b2c;"></i> مرفوض: <strong id="rejectedCount">0</strong></span>
+      </div>
+      <div class="search-area"><input type="text" id="searchInput" placeholder="🔍 بحث بالاسم، رقم ولي الأمر، المرحلة، المدرسة السابقة..."><button id="resetSearchBtn" class="btn-secondary" style="background:#6c8dae;"><i class="fas fa-sync-alt"></i> عرض الكل</button></div>
+      <div class="students-table-wrapper"><table id="studentsTable"><thead><tr><th>#</th><th>الاسم</th><th>المرحلة</th><th>ولي الأمر</th><th>المدرسة السابقة</th><th>الحالة</th><th>الإجراءات</th></thead><tbody id="tableBody"><tr><td colspan="7" style="text-align:center;">جاري التحميل...</td></tr></tbody></table></div>
+      <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between;">
+        <div><button id="exportDataBtn" class="btn-secondary"><i class="fas fa-download"></i> تصدير JSON</button><button id="sampleDataBtn" class="btn-secondary"><i class="fas fa-chalkboard-user"></i> إضافة عينة</button></div>
+        <div class="mini-logo-badge"><i class="fas fa-tree"></i> نيوفيجن تربوي</div>
+      </div>
+      
+      <div style="margin-top: 20px; padding-top: 15px; border-top: 2px dashed #cfdfed;">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <i class="fas fa-file-upload" style="color:#2c7a4d;"></i>
+          <label style="background:#e67e22; padding:8px 18px; border-radius:40px; color:white; cursor:pointer;"><i class="fas fa-cloud-upload-alt"></i> اختيار ملف Excel<input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display:none;"></label>
+          <span id="fileNameDisplay" style="font-size:0.8rem; color:#1f4e6e;"></span>
+          <button id="importExcelBtn" style="background:#2c7a4d; padding:8px 20px;" disabled><i class="fas fa-database"></i> استيراد البيانات</button>
+        </div>
+        <div id="excelPreview" class="upload-preview"></div>
+        <div id="importSuccessMsg" class="import-success"></div>
+      </div>
+    </div>
+  </div>
+  <footer><i class="fas fa-shield-alt"></i> نظام القبول – حالات: مقبول / مرفوض / قيد الانتظار / إعادة اختبار – دعم رفع Excel<div style="margin-top: 8px;"><i class="fas fa-certificate"></i> New Vision Private School © 2025</div></footer>
+</div>
+<div id="printArea" class="printable-area"></div>
+
+<script>
+  const DB_NAME = "PrivateSchoolDB";
+  const STORE_NAME = "applicants";
+  let db = null;
+  let studentsArray = [];
+  let importedData = [];
+
+  function openDatabase() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 5);
+      request.onerror = () => reject("IndexedDB error");
+      request.onsuccess = (event) => { 
+        db = event.target.result; 
+        loadAllStudentsFromDB().then(resolve).catch(reject);
+      };
+      request.onupgradeneeded = (event) => { 
+        const dbRef = event.target.result;
+        if (!dbRef.objectStoreNames.contains(STORE_NAME)) {
+          dbRef.createObjectStore(STORE_NAME, { keyPath: "id" });
+        }
+      };
+    });
+  }
+
+  function loadAllStudentsFromDB() {
+    return new Promise((resolve, reject) => {
+      if (!db) { resolve([]); return; }
+      const transaction = db.transaction([STORE_NAME], "readonly");
+      const request = transaction.objectStore(STORE_NAME).getAll();
+      request.onsuccess = () => {
+        studentsArray = request.result || [];
+        studentsArray.sort((a,b) => b.id - a.id);
+        renderTableAndStats();
+        resolve(studentsArray);
+      };
+      request.onerror = () => reject();
+    });
+  }
+
+  function saveStudentToDB(student) {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STORE_NAME], "readwrite");
+      const request = transaction.objectStore(STORE_NAME).put(student);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject();
+    });
+  }
+
+  function deleteStudentFromDB(id) {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STORE_NAME], "readwrite");
+      const request = transaction.objectStore(STORE_NAME).delete(id);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject();
+    });
+  }
+
+  function isValidPhoneNumber(phone) {
+    if(!phone || phone.trim() === "") return false;
+    const phoneStr = String(phone).trim();
+    return /^\d{11}$/.test(phoneStr);
+  }
+
+  // دالة ذكية لاستخراج القيمة من أي حقل في Excel بغض النظر عن اسم العمود
+  function getValueFromRow(row, possibleNames) {
+    for(let name of possibleNames) {
+      if(row[name] !== undefined && row[name] !== null && row[name] !== "") {
+        return String(row[name]).trim();
+      }
+      // محاولة البحث بأحرف صغيرة
+      const lowerName = name.toLowerCase();
+      for(let key in row) {
+        if(key.toLowerCase() === lowerName && row[key] !== undefined && row[key] !== null && row[key] !== "") {
+          return String(row[key]).trim();
+        }
+      }
+    }
+    return "";
+  }
+
+  async function addStudent(studentData) {
+    if(studentData.studentId && studentData.studentId.trim() !== "" && studentData.studentId.trim() !== "-") {
+      if(studentsArray.some(s => s.studentId === studentData.studentId.trim())) {
+        return false; // مكرر بدون رسالة
+      }
+    }
+    if(!studentData.fullName?.trim()) return false;
+    if(!studentData.parentPhone?.trim()) return false;
+    if(!isValidPhoneNumber(studentData.parentPhone)) return false;
+    if(studentData.parentPhone2 && studentData.parentPhone2.trim() && !isValidPhoneNumber(studentData.parentPhone2)) return false;
+    if(!studentData.parentJob?.trim()) return false;
+    
+    const newStudent = {
+      id: Date.now() + Math.random(),
+      fullName: studentData.fullName.trim(),
+      studentId: studentData.studentId?.trim() || "-",
+      dob: studentData.dob || "",
+      gender: studentData.gender || "ذكر",
+      parentJob: studentData.parentJob.trim(),
+      parentPhone: studentData.parentPhone.trim(),
+      parentPhone2: studentData.parentPhone2?.trim() || "",
+      email: studentData.email?.trim() || "",
+      grade: studentData.grade || "الصف الأول",
+      previousSchool: studentData.previousSchool?.trim() || "",
+      notes: studentData.notes?.trim() || "",
+      status: "pending",
+      applicationDate: new Date().toLocaleDateString('ar-EG')
+    };
+    await saveStudentToDB(newStudent);
+    studentsArray.unshift(newStudent);
+    return true;
+  }
+
+  async function updateStatus(id, newStatus) {
+    const idx = studentsArray.findIndex(s => s.id == id);
+    if(idx !== -1) { 
+      studentsArray[idx].status = newStatus; 
+      await saveStudentToDB(studentsArray[idx]); 
+      renderTableAndStats(); 
+    }
+  }
+
+  async function deleteStudent(id) { 
+    if(confirm("حذف الطلب بشكل دائم؟")) { 
+      await deleteStudentFromDB(id); 
+      studentsArray = studentsArray.filter(s => s.id != id); 
+      renderTableAndStats(); 
+    } 
+  }
+  
+  let currentSearchTerm = "";
+  function filterStudents(search = "") { 
+    if(!search.trim()) return [...studentsArray]; 
+    const term = search.trim().toLowerCase(); 
+    return studentsArray.filter(s => 
+      s.fullName.toLowerCase().includes(term) || 
+      s.parentPhone.includes(term) || 
+      (s.parentPhone2 && s.parentPhone2.includes(term)) || 
+      s.grade.toLowerCase().includes(term) || 
+      (s.previousSchool && s.previousSchool.toLowerCase().includes(term)) ||
+      (s.parentJob && s.parentJob.toLowerCase().includes(term))
+    ); 
+  }
+  
+  function getStatusTextAndClass(status) { 
+    switch(status) { 
+      case "accepted": return { text: "✅ مقبول", class: "status-accepted" }; 
+      case "rejected": return { text: "❌ مرفوض", class: "status-rejected" }; 
+      case "retest": return { text: "🔄 إعادة اختبار", class: "status-retest" }; 
+      default: return { text: "⏳ قيد الانتظار", class: "status-pending" }; 
+    } 
+  }
+  
+  function renderTableAndStats() {
+    const total = studentsArray.length;
+    const accepted = studentsArray.filter(s => s.status === "accepted").length;
+    const pending = studentsArray.filter(s => s.status === "pending").length;
+    const rejected = studentsArray.filter(s => s.status === "rejected").length;
+    const retest = studentsArray.filter(s => s.status === "retest").length;
+    document.getElementById("totalCount").innerText = total;
+    document.getElementById("acceptedCount").innerText = accepted;
+    document.getElementById("pendingCount").innerText = pending;
+    document.getElementById("rejectedCount").innerText = rejected;
+    document.getElementById("retestCount").innerText = retest;
+    
+    const filtered = filterStudents(currentSearchTerm);
+    const tbody = document.getElementById("tableBody");
+    if(filtered.length === 0) { 
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">📭 لا توجد بيانات</td></tr>`; 
+      return; 
+    }
+    let html = "";
+    filtered.forEach((stud, idx) => { 
+      const { text: statusText, class: statusClass } = getStatusTextAndClass(stud.status);
+      const parentDisplay = `${stud.parentJob || "ولي أمر"}: ${stud.parentPhone}`;
+      html += `<tr>
+        <td>${idx+1}</td>
+        <td style="font-weight:500;">${escapeHtml(stud.fullName)}</td>
+        <td>${escapeHtml(stud.grade)}</td>
+        <td>${escapeHtml(parentDisplay)}</td>
+        <td>${escapeHtml(stud.previousSchool || "-")}</td>
+        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+        <td class="action-buttons">
+          <i class="fas fa-check-circle" title="قبول" onclick="window.approveStudent(${stud.id})"></i>
+          <i class="fas fa-redo-alt" title="إعادة اختبار" onclick="window.retestStudent(${stud.id})"></i>
+          <i class="fas fa-times-circle" title="رفض" onclick="window.rejectStudent(${stud.id})"></i>
+          <i class="fas fa-trash-alt" title="حذف" onclick="window.deleteStd(${stud.id})"></i>
+        </td>
+      </tr>`; 
+    });
+    tbody.innerHTML = html;
+  }
+  
+  function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+  window.approveStudent = id => updateStatus(id, "accepted");
+  window.rejectStudent = id => updateStatus(id, "rejected");
+  window.retestStudent = id => updateStatus(id, "retest");
+  window.deleteStd = id => deleteStudent(id);
+  function resetSearch() { currentSearchTerm = ""; document.getElementById("searchInput").value = ""; renderTableAndStats(); }
+
+  function generatePrintableHTML(title, filtered) { 
+    if(filtered.length === 0) return "<div style='text-align:center;padding:40px;'>⚠️ لا توجد بيانات</div>";
+    let rows = ""; 
+    filtered.forEach((s, idx) => { 
+      let statusText = s.status === "accepted" ? "مقبول" : (s.status === "rejected" ? "مرفوض" : (s.status === "retest" ? "إعادة اختبار" : "قيد الانتظار"));
+      rows += `<tr>
+        <td>${idx+1}</td>
+        <td>${escapeHtml(s.fullName)}</td>
+        <td>${escapeHtml(s.grade)}</td>
+        <td>${escapeHtml(s.parentJob || "ولي أمر")}</td>
+        <td>${escapeHtml(s.parentPhone)}</td>
+        <td>${escapeHtml(s.parentPhone2 || "-")}</td>
+        <td>${escapeHtml(s.previousSchool || "-")}</td>
+        <td>${statusText}</td>
+        <td>${escapeHtml(s.applicationDate)}</td>
+      </tr>`; 
+    });
+    return `<div style="direction:rtl;font-family:'Tajawal',sans-serif;padding:20px;">
+      <div class="logo-area-print" style="display:flex;align-items:center;gap:15px;justify-content:center;margin-bottom:20px;">
+        <div style="width:70px;height:70px;background:linear-gradient(135deg,#1f4e6e,#2c7a4d);border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="fas fa-graduation-cap" style="font-size:36px;color:white;"></i></div>
+        <div><h2 style="margin:0;">نيوفيجن الخاصة</h2><p style="margin:0;">رؤية وتميز - جودة تعليمية</p></div>
+      </div>
+      <h3 style="text-align:center;">${title} - ${new Date().toLocaleDateString('ar-EG')}</h3>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #aaa;">
+        <thead><tr style="background:#eef3fc;"><th>#</th><th>الاسم</th><th>المرحلة</th><th>وظيفة ولي الأمر</th><th>رقم ولي الأمر1</th><th>رقم ولي الأمر2</th><th>المدرسة السابقة</th><th>الحالة</th><th>تاريخ التقديم</th>}</thead>
+        <tbody>${rows}</tbody>
+      追赶
+    </div>`; 
+  }
+  
+  function printByStatus(status, title) { 
+    let filtered = status === 'all' ? [...studentsArray] : studentsArray.filter(s => s.status === status); 
+    if(filtered.length === 0) { alert(`لا توجد بيانات للطباعة`); return; } 
+    const area = document.getElementById("printArea"); 
+    area.innerHTML = generatePrintableHTML(title, filtered); 
+    area.style.display = "block"; 
+    window.print(); 
+    area.style.display = "none"; 
+    area.innerHTML = ""; 
+  }
+  
+  function exportToExcel() { 
+    if(!studentsArray.length) { alert("لا توجد بيانات"); return; } 
+    const data = studentsArray.map((s,i) => ({ 
+      "الرقم":i+1,
+      "الاسم الكامل": s.fullName, 
+      "رقم الهوية": s.studentId,
+      "تاريخ الميلاد": s.dob,
+      "الجنس": s.gender,
+      "وظيفة ولي الأمر": s.parentJob || "",
+      "رقم ولي الأمر1": s.parentPhone,
+      "رقم ولي الأمر2": s.parentPhone2,
+      "البريد الإلكتروني": s.email,
+      "المرحلة": s.grade,
+      "المدرسة السابقة": s.previousSchool,
+      "الحالة": s.status==="accepted"?"مقبول":(s.status==="rejected"?"مرفوض":(s.status==="retest"?"إعادة اختبار":"قيد الانتظار")),
+      "تاريخ التقديم": s.applicationDate,
+      "ملاحظات": s.notes 
+    })); 
+    const ws = XLSX.utils.json_to_sheet(data); 
+    const wb = XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(wb, ws, "الطلاب"); 
+    XLSX.writeFile(wb, `Students_${Date.now()}.xlsx`); 
+  }
+
+  // رفع واستيراد Excel - الإصدار المحسن
+  const fileInput = document.getElementById("excelFileInput");
+  const fileNameDisplay = document.getElementById("fileNameDisplay");
+  const importBtn = document.getElementById("importExcelBtn");
+  const previewDiv = document.getElementById("excelPreview");
+  const successMsg = document.getElementById("importSuccessMsg");
+
+  fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    fileNameDisplay.innerHTML = `<i class="fas fa-file-excel"></i> ${file.name}`;
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet);
+      if(!rows.length) { alert("الملف فارغ"); return; }
+      importedData = rows;
+      
+      // عرض معاينة البيانات
+      let previewHtml = `<div style="font-weight:bold;margin-bottom:8px;"><i class="fas fa-eye"></i> معاينة البيانات (أول 5 صفوف):</div><div style="overflow-x:auto;"><table class="preview-table" border="1" style="border-collapse:collapse;width:100%;"><thead><tr>`;
+      const headers = Object.keys(rows[0]);
+      headers.forEach(h => previewHtml += `<th style="padding:6px;">${escapeHtml(h)}</th>`);
+      previewHtml += `</thead><tbody>`;
+      rows.slice(0,5).forEach(row => {
+        previewHtml += `重点`;
+        headers.forEach(h => previewHtml += `<td style="padding:6px;">${escapeHtml(String(row[h] || "-"))}</td>`);
+        previewHtml += `</tr>`;
+      });
+      previewHtml += `</tbody></table></div><div class="mini-logo-badge" style="margin-top:8px;">📊 إجمالي الصفوف: ${rows.length}</div>`;
+      previewDiv.innerHTML = previewHtml;
+      previewDiv.classList.add("show");
+      importBtn.disabled = false;
+      successMsg.style.display = "none";
+    } catch(err) {
+      alert("خطأ في قراءة الملف: " + err.message);
+    }
+  });
+
+  importBtn.addEventListener("click", async () => {
+    if(!importedData.length) { alert("لا توجد بيانات للاستيراد"); return; }
+    let added = 0, skipped = 0;
+    
+    for(const row of importedData) {
+      // استخراج البيانات باستخدام الدالة الذكية
+      let fullName = getValueFromRow(row, ["الاسم الكامل", "الاسم", "fullName", "FullName", "NAME", "name", "Student Name"]);
+      let studentId = getValueFromRow(row, ["رقم الهوية", "studentId", "StudentId", "ID", "رقم الطالب"]);
+      let dob = getValueFromRow(row, ["تاريخ الميلاد", "dob", "DOB", "BirthDate", "تاريخ الميلاد", "birthdate"]);
+      let gender = getValueFromRow(row, ["الجنس", "gender", "Gender", "sex"]);
+      let parentJob = getValueFromRow(row, ["وظيفة ولي الأمر", "parentJob", "ParentJob", "وظيفة الولي", "ولي الأمر وظيفة"]);
+      let parentPhone = getValueFromRow(row, ["رقم ولي الأمر", "parentPhone", "ParentPhone", "ولي الأمر", "phone", "Phone"]);
+      let parentPhone2 = getValueFromRow(row, ["رقم ولي الأمر 2", "parentPhone2", "ParentPhone2", "رقم ولي الأمر الثاني"]);
+      let email = getValueFromRow(row, ["البريد الإلكتروني", "email", "Email", "بريد"]);
+      let grade = getValueFromRow(row, ["المرحلة", "grade", "Grade", "level", "الصف"]);
+      let previousSchool = getValueFromRow(row, ["المدرسة السابقة", "previousSchool", "PreviousSchool", "مدرسة سابقة", "school"]);
+      let notes = getValueFromRow(row, ["ملاحظات", "notes", "Notes", "وصف"]);
+      
+      // تعيين القيم الافتراضية للحقول المفقودة
+      if(!gender) gender = "ذكر";
+      if(!grade) grade = "الصف الأول";
+      if(!parentJob) parentJob = "ولي أمر";
+      
+      // التحقق من الحقول المطلوبة
+      if(!fullName) { skipped++; continue; }
+      if(!parentPhone) { skipped++; continue; }
+      if(!isValidPhoneNumber(parentPhone)) { skipped++; continue; }
+      
+      // التحقق من التكرار
+      const exists = studentsArray.some(s => s.fullName === fullName || (s.studentId && s.studentId === studentId));
+      if(exists) { skipped++; continue; }
+      
+      const success = await addStudent({ 
+        fullName, studentId, dob, gender, parentJob, parentPhone, parentPhone2, email, grade, previousSchool, notes 
+      });
+      
+      if(success) added++;
+      else skipped++;
+    }
+    
+    await loadAllStudentsFromDB(); // إعادة تحميل البيانات بعد الإضافة
+    successMsg.innerHTML = `<i class="fas fa-check-circle"></i> ✅ تم استيراد ${added} طالب بنجاح، تخطي ${skipped} بسبب نقص بيانات أو تكرار.`;
+    successMsg.style.display = "block";
+    setTimeout(() => { successMsg.style.display = "none"; }, 5000);
+    
+    alert(`تم استيراد ${added} طالب بنجاح، تخطي ${skipped}`);
+    previewDiv.classList.remove("show");
+    previewDiv.innerHTML = "";
+    importedData = [];
+    importBtn.disabled = true;
+    fileInput.value = "";
+    fileNameDisplay.innerHTML = "";
+  });
+
+  // Form submission
+  document.getElementById("submitBtn").addEventListener("click", async () => {
+    const fullName = document.getElementById("fullName").value;
+    const studentId = document.getElementById("studentId").value;
+    const dob = document.getElementById("dob").value;
+    const gender = document.getElementById("gender").value;
+    const parentJob = document.getElementById("parentJob").value;
+    const parentPhone = document.getElementById("parentPhone").value;
+    const parentPhone2 = document.getElementById("parentPhone2").value;
+    const email = document.getElementById("email").value;
+    const grade = document.getElementById("grade").value;
+    const previousSchool = document.getElementById("previousSchool").value;
+    const notes = document.getElementById("notes").value;
+    
+    if(!fullName) { alert("الاسم الكامل مطلوب"); return; }
+    if(!dob) { alert("تاريخ الميلاد مطلوب"); return; }
+    if(!parentPhone) { alert("رقم ولي الأمر الأول مطلوب"); return; }
+    if(!isValidPhoneNumber(parentPhone)) { alert("رقم ولي الأمر الأول يجب أن يكون 11 رقمًا"); return; }
+    if(parentPhone2 && !isValidPhoneNumber(parentPhone2)) { alert("رقم ولي الأمر الثاني يجب أن يكون 11 رقمًا"); return; }
+    if(!parentJob) { alert("وظيفة ولي الأمر مطلوبة"); return; }
+    
+    const success = await addStudent({ fullName, studentId, dob, gender, parentJob, parentPhone, parentPhone2, email, grade, previousSchool, notes });
+    if(success) {
+      document.getElementById("studentForm").reset();
+      document.getElementById("phoneErrorMsg").style.display = "none";
+      alert("تم تسجيل الطالب بنجاح");
+      renderTableAndStats();
+    } else {
+      alert("فشل التسجيل - تأكد من عدم تكرار البيانات");
+    }
+  });
+  
+  document.getElementById("clearFormBtn").addEventListener("click", () => { 
+    document.getElementById("studentForm").reset(); 
+    document.getElementById("phoneErrorMsg").style.display = "none"; 
+  });
+  document.getElementById("searchInput").addEventListener("input", (e) => { currentSearchTerm = e.target.value; renderTableAndStats(); });
+  document.getElementById("resetSearchBtn").addEventListener("click", resetSearch);
+  document.getElementById("exportDataBtn").addEventListener("click", () => { 
+    const a = document.createElement("a"); 
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(studentsArray,null,2)])); 
+    a.download = `backup_${Date.now()}.json`; 
+    a.click(); 
+    URL.revokeObjectURL(a.href); 
+  });
+  document.getElementById("sampleDataBtn").addEventListener("click", async () => { 
+    const samples = [
+      ["ليلى أحمد", "L001", "2015-05-10", "أنثى", "أب", "05123456789", "05112233445", "ليلى@sch.com", "الصف الرابع", "مدرسة النور", "عينة"],
+      ["يوسف محمود", "Y002", "2014-08-22", "ذكر", "أم", "05667788990", "", "yousef@sch.com", "الصف الخامس", "مدرسة الأندلس", "عينة"],
+      ["سلمى خالد", "S003", "2016-01-15", "أنثى", "وصي قانوني", "05998877665", "05887766554", "salma@sch.com", "الصف الثالث", "مدرسة السلام", "عينة"]
+    ];
+    let added=0; 
+    for(const s of samples) { 
+      if(!studentsArray.some(st=>st.fullName===s[0])) { 
+        await addStudent({ fullName:s[0], studentId:s[1], dob:s[2], gender:s[3], parentJob:s[4], parentPhone:s[5], parentPhone2:s[6], email:s[7], grade:s[8], previousSchool:s[9], notes:s[10] }); 
+        added++; 
+      } 
+    } 
+    if(added) {
+      renderTableAndStats();
+      alert(`تمت إضافة ${added} طالب تجريبي`);
+    } else {
+      alert("العينات موجودة مسبقاً");
+    }
+  });
+  
+  document.getElementById("printAcceptedBtn").addEventListener("click", () => printByStatus("accepted", "الطلاب المقبولين"));
+  document.getElementById("printRejectedBtn").addEventListener("click", () => printByStatus("rejected", "الطلاب المرفوضين"));
+  document.getElementById("printPendingBtn").addEventListener("click", () => printByStatus("pending", "طلاب قائمة الانتظار"));
+  document.getElementById("printRetestBtn").addEventListener("click", () => printByStatus("retest", "طلاب إعادة الاختبار"));
+  document.getElementById("printAllBtn").addEventListener("click", () => printByStatus("all", "جميع المتقدمين"));
+  document.getElementById("exportExcelBtn").addEventListener("click", exportToExcel);
+  
+  const phone1 = document.getElementById("parentPhone"); 
+  phone1.addEventListener("input", function() { 
+    this.value = this.value.replace(/\D/g,'').slice(0,11); 
+    if(this.value.length===11) document.getElementById("phoneErrorMsg").style.display="none"; 
+    else if(this.value.length>0) document.getElementById("phoneErrorMsg").style.display="flex"; 
+    else document.getElementById("phoneErrorMsg").style.display="none"; 
+  });
+  const phone2 = document.getElementById("parentPhone2"); 
+  phone2.addEventListener("input", function() { this.value = this.value.replace(/\D/g,'').slice(0,11); });
+  
+  openDatabase();
+</script>
+</body>
+</html>
